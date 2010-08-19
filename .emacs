@@ -157,11 +157,13 @@
 
 (setq compilation-scroll-output t)
 (require 'compile)
+
 (defun compile-next-makefile ()                                                           
   (interactive)                                                                           
   (let* ((default-directory (or (upward-find-file "Makefile") "."))                       
-         (compile-command (concat "cd " default-directory " &&  make -j4 && ./build/unit_tests --run=index_suite")))                                      
+         (compile-command (concat "cd " default-directory " &&  make -j4")))                                      
     (compile compile-command))) 
+
 
 ;; (defun my-cedet-hook ()
 ;; (local-set-key [(control return)] 'semantic-ia-complete-symbol)
@@ -172,6 +174,7 @@
     
 
 (global-set-key "\C-cc"       'compile-next-makefile)
+(global-set-key "\C-cC"       'compile)
 (global-set-key [f11]         'dabbrev-expand)
 (define-key esc-map [f12]     'dabbrev-completion)
 (global-set-key "\C-m"        'newline-and-indent)
