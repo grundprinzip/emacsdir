@@ -1,12 +1,31 @@
+(setq load-path (cons "~/.emacs.d/elisp" load-path))
+
+;; TRAMP
+(require 'tramp)
+(setq tramp-default-method "scp")
+
+;; Load diction
+(require 'diction)
+
+;; Auctex
+(load "auctex.el" nil t t)
+(load "preview-latex.el" nil t t)
+
+(require 'tex-site)
+
+;; Enable Emacs Server mode on start
+(server-start)
+
 ;; Compile easy
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/git/bin:/usr/local/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/git/bin:/usr/local/bin:/usr/texbin"))
 
 ;;--------------------------------------------------------------------
 ;; Lines enabling gnuplot-mode
 
 ;; move the files gnuplot.el to someplace in your lisp load-path or
 ;; use a line like
-(setq load-path (append (list "~/emacs.d/elisp/gnuplot") load-path))
+(add-to-list 'load-path "~/.emacs.d/elisp/gnuplot")
+(require 'gnuplot)
 
 ;; these lines enable the use of gnuplot mode
 (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
@@ -25,10 +44,23 @@
 ;; end of line for gnuplot-mode
 ;;--------------------------------------------------------------------
 
+;; Simple Note
+(add-to-list 'load-path "~/.emacs.d/elisp/simplenote.el")
+(require 'simplenote)
+(setq simplenote-email "grundprinzip@gmail.com")
+(setq simplenote-password "wiknith")
+(simplenote-setup)
+
 ;; Textmate mode
 (add-to-list 'load-path "~/.emacs.d/elisp/textmate.el")
 (require 'textmate)
 (textmate-mode)
+
+;; DBLP mode
+(add-to-list 'load-path "~/.emacs.d/elisp/dblp.el")
+(require 'dblp)
+(add-hook 'LaTeX-mode-hook 'dblp-mode)
+
 
 ;; No backup files
 (setq make-backup-files nil)
@@ -38,12 +70,12 @@
 (global-linum-mode 1)
 (setq linum-format "%2d ")
 
-(setq load-path (cons "~/.emacs.d/elisp" load-path))
+
 
 (require 'color-theme)
-(color-theme-initialize)
-(load-file "~/.emacs.d/elisp/zen-and-art.el")
-(color-theme-zen-and-art)
+;;(color-theme-initialize)
+;;(load-file "~/.emacs.d/elisp/zen-and-art.el")
+;;(color-theme-zen-and-art)
 
 ;; Set highlighting
 ;;(global-hl-line-mode 1)
@@ -77,6 +109,7 @@
 ;;         ))
 
 (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+
 
 ;; Recent file mode
 (require 'recentf)
@@ -124,8 +157,6 @@
 (setq display-time-day-and-date t) (display-time)
 
 
-
-
 (require 'cl) ; If you don't have it already
 
 (defun upward-find-file (filename &optional startdir)
@@ -158,19 +189,28 @@
 (setq compilation-scroll-output t)
 (require 'compile)
 
+
 (defun compile-next-makefile ()                                                           
   (interactive)                                                                           
   (let* ((default-directory (or (upward-find-file "Makefile") "."))                       
          (compile-command (concat "cd " default-directory " &&  make -j4")))                                      
     (compile compile-command))) 
 
+;;CEDET
+(load-file "~/.emacs.d/elisp/cedet-1.0/common/cedet.el")
+(semantic-load-enable-gaudy-code-helpers)
 
-;; (defun my-cedet-hook ()
-;; (local-set-key [(control return)] 'semantic-ia-complete-symbol)
-;; (local-set-key "\C-c?" 'semantic-ia-complete-symbol-menu)
-;; (local-set-key "\C-c>" 'semantic-complete-analyze-inline)
-;; (local-set-key "\C-cp" 'semantic-analyze-proto-impl-toggle))
-;; (add-hook 'c-mode-common-hook 'my-cedet-hook)
+(defun my-cedet-hook ()
+(local-set-key "\C-c?" 'semantic-ia-complete-symbol)
+(local-set-key [(control return)] 'semantic-ia-complete-symbol-menu)
+(local-set-key "\C-c>" 'semantic-complete-analyze-inline)
+(local-set-key "\C-cp" 'semantic-analyze-proto-impl-toggle))
+
+(add-hook 'c-mode-common-hook 'my-cedet-hook)
+
+(defun my-semantic-hook ()
+  (imenu-add-to-menubar "TAGS"))
+(add-hook 'semantic-init-hooks 'my-semantic-hook)
     
 
 (global-set-key "\C-cc"       'compile-next-makefile)
